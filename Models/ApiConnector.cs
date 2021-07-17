@@ -84,7 +84,6 @@ namespace ElectroStore.Models
             string ArticlesJsonFormat = JsonConvert.SerializeObject(rootG, Formatting.None);
             return ArticlesJsonFormat;
         }
-
         public static void RegisterItemsId()
         {
             RootR rootR = new RootR();
@@ -117,6 +116,10 @@ namespace ElectroStore.Models
             }
 
         }   
+        public static void BuildListRemainsForWeb()
+        {
+
+        }
 
 
     }
