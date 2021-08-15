@@ -12,6 +12,6 @@ namespace ElectroStore.Models
 
     public class RootR
     {
-        public List <RegisterItemIds> Update { get; set; }
+        public List<RegisterItemIds> Update = new List<RegisterItemIds>();
     }
 }

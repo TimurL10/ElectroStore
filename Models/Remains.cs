@@ -27,7 +27,10 @@ namespace ElectroStore.Models
         public string VendorCode { get; set; }
         public double PriceRetail { get; set; }
         public int Remain { get; set; }
-        public int Weight { get; set; }
+        public string Weight { get ; set; }
+        public string Param1{ get; set; }
+        public string Param2 { get; set; }
+        public string Param3 { get; set; }
 
     }
 }

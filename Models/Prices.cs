@@ -17,7 +17,7 @@ namespace ElectroStore.Models
 
     public class RootPrice
     {
-        public List<Prices> PricesList { get; set; }
+        public List<Prices> PricesList = new List<Prices>();
     }
 }
 
