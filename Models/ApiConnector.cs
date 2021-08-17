@@ -11,6 +11,7 @@ using System.Collections;
 using System.Diagnostics;
 using ElectroStore.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ElectroStore.Models
 {
@@ -22,8 +23,9 @@ namespace ElectroStore.Models
         static string Nomenclature = "http://swop.krokus.ru/ExchangeBase/hs/catalog/nomenclature?fieldSet=max";
         static string GetPricePath = "http://swop.krokus.ru/ExchangeBase/hs/catalog/pricesOffline";
         static IExcelOperation excel;
+        static public IConfiguration config;
         public static ExcelOperations ExcelOperations = new ExcelOperations();
-
+        static public DbRepository DbRepository = new DbRepository();
         //Get Id by Articles from xslx
         public static void GetIdByArticles(string articles)
         {
@@ -229,20 +231,8 @@ namespace ElectroStore.Models
 
             //ExcelOperations.PreparePricesToLoad(remainsList);
 
-            using (var itemContext = new ItemsContext())
-            {
-                itemContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-
-                foreach (var s in remainsList)
-                {
-                    if (itemContext.Remains.Find(s.Id) == null)
-                        itemContext.Remains.Add(s);
-                    else
-                        itemContext.Remains.Update(s);
-                }
-                    
-                itemContext.SaveChanges();
-            }
+            foreach (var r in remainsList)
+                DbRepository.InsertRemain(r);
         }
         
 
