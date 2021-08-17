@@ -95,16 +95,18 @@ namespace ElectroStore.Models
             ExcelOperations _excelOperation = new ExcelOperations();
             ArrayList arrayList = new ArrayList();
             List<pricesOffline> getPricesBy = new List<pricesOffline>();
-            using (var itemContext = new ItemsContext())
+            var list = DbRepository.GetRemainsForPrices();
+            //using (var itemContext = new ItemsContext())
+            //{
+            //foreach (var a in itemContext.GetIdByArticles)
+            foreach (var a in list)
             {
-                foreach (var a in itemContext.GetIdByArticles)
-                {
                     pricesOffline getPrices = new pricesOffline() { Id = a.id, Amount = 0};
                     getPricesBy.Add(getPrices);
-                }
+            }
                 rootG.goods = getPricesBy;
 
-            }
+           // }
 
             string ArticlesJsonFormat = JsonConvert.SerializeObject(rootG, Formatting.None);
             return ArticlesJsonFormat;
@@ -158,10 +160,14 @@ namespace ElectroStore.Models
             string manufacture = "";
             string images = "";
 
+            var list = DbRepository.GetRemainsForPrices();
+
+            foreach (var a in list)
+                getPrice.ids.Add(a.id);
             using (var itemContext = new ItemsContext())
             {
-                foreach (var a in itemContext.GetIdByArticles)
-                    getPrice.ids.Add(a.id);
+                //foreach (var a in itemContext.GetIdByArticles)
+                //    getPrice.ids.Add(a.id);
                 foreach (var s in itemContext.StockOfGoods)
                     stockOfGoodsList.Add(s);                
             }
@@ -179,9 +185,11 @@ namespace ElectroStore.Models
             {
                 j++;
                 Remains remains = new Remains();
+                
                 for (int i = 0; i < s.packs.Count; i++)
                 {
                     packCount = s.packs[i].amountInPack;
+                    remains.Weight = s.packs[i].weight.ToString();
                 }
                 for (int i = 0; i < s.attributes.Count; i++)
                 {
@@ -201,7 +209,7 @@ namespace ElectroStore.Models
                     }                  
                 }
 
-                remains.Id = random.Next(123, 99999) + j;
+                remains.Id = random.Next(333, 99999) + j;
                 remains.ItemName = s.name;
                 remains.ItemNameInURL = s.manufacturerCode + "_" + stockOfGoodsList.Find(m => m.Id == s.id).idCategoria;
                 remains.ShortDescription = s.name;
@@ -211,8 +219,8 @@ namespace ElectroStore.Models
                 remains.TegTitle = "";
                 remains.MetaTegKeywords = "";
                 remains.MetaTegDescription = "";
-                if (stockOfGoodsList.Find(m => m.Id == s.id).idCategoria == "6341")
-                    remains.CategoryInSite = "Каталог/Розетки/Legrand";
+                //if (stockOfGoodsList.Find(m => m.Id == s.id).idCategoria == "6341")
+                remains.CategoryInSite = "Каталог/Выключатели/Legrand";
                 remains.WeightCoefficient = "";
                 remains.Currancy = "₽";
                 remains.NDS = "";
@@ -222,14 +230,14 @@ namespace ElectroStore.Models
                 remains.VendorCode = stockOfGoodsList.Find(m => m.Id == s.id).articul;
                 remains.PriceRetail = stockOfGoodsList.Find(m => m.Id == s.id).PriceBasic;
                 remains.Remain = stockOfGoodsList.Find(m => m.Id == s.id).Stockamount;
-                remains.Weight = "";
+                remains.Weight = remains.Weight;
                 remains.Param1 = " Кол-во в упаковке: " + packCount + " шт." + " " + kratnostzakaza;
                 remains.Param2 = seriaName;
                 remains.Param3 = manufacture;
                 remainsList.Add(remains);
             }
 
-            //ExcelOperations.PreparePricesToLoad(remainsList);
+            ExcelOperations.PreparePricesToLoad(remainsList);
 
             foreach (var r in remainsList)
                 DbRepository.InsertRemain(r);

@@ -52,5 +52,13 @@ namespace ElectroStore.DAL
         //        connection.Execute($"Update [Remains] set NNT = {mrcs.Nnt},Price = {mrcs.Price} where NNT = {mrcs.Nnt}", mrcs);
         //    }
         //}
+
+        public List<GetIdByArticles> GetRemainsForPrices()
+        {
+            using (IDbConnection connection = dbConnection)
+            {
+                return connection.Query<GetIdByArticles>("select * from [ElectroStoreDb1].[dbo].[GetIdByArticles] where article not in (select vendorcode from[ElectroStoreDb1].[dbo].[Remains])").AsList();
+            }
+        }
     }
 }

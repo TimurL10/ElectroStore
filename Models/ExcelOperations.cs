@@ -131,7 +131,7 @@ namespace ElectroStore.Models
                         worksheet.Cells[k, 25].Value = "";
                         worksheet.Cells[k, 26].Value = "";
                         worksheet.Cells[k, 27].Value = remains[i].Remain;
-                        worksheet.Cells[k, 28].Value = "";
+                        worksheet.Cells[k, 28].Value = remains[i].Weight;
                         worksheet.Cells[k, 28].Value = "";
                         worksheet.Cells[k, 29].Value = "";
                         worksheet.Cells[k, 30].Value = remains[i].Param1;

@@ -8,6 +8,7 @@ namespace ElectroStore.Services
     public interface IDbRepository
     {
         public void InsertRemain(Remains remains);
+        public List<GetIdByArticles> GetRemainsForPrices();
 
     }
 }
