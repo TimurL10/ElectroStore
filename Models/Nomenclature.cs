@@ -10,52 +10,56 @@ namespace ElectroStore.Models
     public class Nomenclature
     {      
         public int NomenclatureId { get; set; }
+        public int ClassFilterId { get; set; } //public List<Object> classifiers { get; set; }
+        public int AttributesValueId { get; set; } //public List<Attribute> attributes { get; set; }
+        public int MetapropertiesId { get; set; } //public List<Object> metaproperties { get; set; }
+        public int FeaturesId { get; set; } //null
+        public int featuresAttributesId { get; set; } //null
+        public int Gallery { get; set; } //public List<Object> gallery { get; set; }
+        public int Gallery600 { get; set; } //public List<Object> gallery600 { get; set; }
+        public string Barcodes { get; set; }  //public List<string> barcodes { get; set; }
+        public string TypeOfProduct { get; set; }
+        public string TypeOfProductId { get; set; }
         //public List<Object> propertiesHavingValue { get; set; }
         //public List<Object> featuresAttributes { get; set; }
-        public Unit unit { get; set; }
-        //public List<string> barcodes { get; set; }
-        public List<Image> images { get; set; }
-        //public List<Object> gallery { get; set; }
-        public List<Images600> images600 { get; set; }
-        //public List<Object> gallery600 { get; set; }
-        public Youtube youtube { get; set; }
-        //public List<Object> classifiers { get; set; }
+        public int Unit { get; set; }  //public Unit unit { get; set; }
+        public int ImagesId { get; set; }  //ForeignKey public List<Image> images { get; set; }
+        public int Images600Id { get; set; }  //public List<Images600> images600 { get; set; }
+        public int YoutubeId { get; set; }  //public Youtube youtube { get; set; }
+        public Guid PacksId { get; set; }  //public List<Pack> packs { get; set; }
+
+        public string CodeTNVED { get; set; }
         //public List<Object> features { get; set; }
-        public string id { get; set; }
-        public string name { get; set; }
-        public string nameForPrint { get; set; }
-        public bool inStock { get; set; }
-        public string categoryId { get; set; }
-        public string categoryName { get; set; }
-        public int vat { get; set; }
-        public string requiredGTD { get; set; }
-        public string alcoholContaining { get; set; }
-        public string requiredGISM { get; set; }
-        public string excisable { get; set; }
-        public string brandId { get; set; }
-        public string brandName { get; set; }
-        public string brandCommercial { get; set; }
-        public string articulElevel { get; set; }
-        public string manufacturerCode { get; set; }
-        public string manufacturerId { get; set; }
-        public string manufacturerName { get; set; }
-        public string modified { get; set; }
-        public string type { get; set; }
-        public string description { get; set; }
-        public int deliveryTime { get; set; }
-        public Weight weight { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string NameForPrint { get; set; }
+        public bool InStock { get; set; }
+        public string CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int Vat { get; set; }
+        public bool RequiredGTD { get; set; }
+        public bool AlcoholContaining { get; set; }
+        public bool RequiredGISM { get; set; }
+        public bool Excisable { get; set; }
+        public string BrandId { get; set; }
+        public string BrandName { get; set; }
+        public string BrandCommercial { get; set; }
+        public string ArticulElevel { get; set; }
+        public string ManufacturerCode { get; set; }
+        public string ManufacturerId { get; set; }
+        public string ManufacturerName { get; set; }
+        public DateTime Modified { get; set; }
+        public string Type { get; set; }
+        public string Description { get; set; }
+        public int DeliveryTime { get; set; }
+        public Weight Weight { get; set; }
         public Volume volume { get; set; }
-        public List<Pack> packs { get; set; }
-        //public List<Object> metaproperties { get; set; }
         public int featureCount { get; set; }
-        public List<Attribute> attributes { get; set; }
     }
 
     public class Unit
     {
-        [ForeignKey("Nomenclature")]
-        public int RefNomenclatureId { get; set; }
-        public int id { get; set; }
+        public int NomenclatureId { get; set; }
         public int UnitId { get; set; }
         public string okei { get; set; }
         public string name { get; set; }
@@ -103,15 +107,10 @@ namespace ElectroStore.Models
 
     public class Weight
     {
-        [ForeignKey("Nomenclature")]
-        public int RefNomenclatureId { get; set; }
-        public int id { get; set; }
-        public Unit unit { get; set; }
-        public double unitCount { get; set; }
+        public int WeightId { get; set; } //must to be guid
+        public int UnitId { get; set; }
+        public float unitCount { get; set; }
         public int baseUnitCount { get; set; }
-
-        public Nomenclature Nomenclature { get; set; }
-
     }
 
     public class Volume
@@ -172,6 +171,13 @@ namespace ElectroStore.Models
     public class RootNomenclature
     {
         public int id { get; set; }
-        public List<Nomenclature> nomenclatures { get; set; }
+        public List<NomenclatureGet> nomenclatures { get; set; }
+    }
+
+    public class AttributesValues
+    {
+        public int AttributesValuesId { get; set; }
+        public int Id { get; set; }
+        public string Value { get; set; }
     }
 }

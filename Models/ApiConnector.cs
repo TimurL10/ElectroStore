@@ -18,14 +18,16 @@ namespace ElectroStore.Models
     public class ApiConnector
     {
         static string Path_one = "http://swop.krokus.ru/ExchangeBase/hs/catalog/getidbyarticles";
-        static string Path_two = "http://swop.krokus.ru/ExchangeBase/hs/catalog/stockOfGoods";
+        static string Path_two = "http://swop.krokus.ru/ExchangeBase/hs/catalog/stockOfGoods?format=:string";
         static string Path_reg = "http://swop.krokus.ru/ExchangeBase/hs/catalog/nomenclature?fieldSet=min";
         static string Nomenclature = "http://swop.krokus.ru/ExchangeBase/hs/catalog/nomenclature?fieldSet=max";
         static string GetPricePath = "http://swop.krokus.ru/ExchangeBase/hs/catalog/pricesOffline";
-        static IExcelOperation excel;
         static public IConfiguration config;
         public static ExcelOperations ExcelOperations = new ExcelOperations();
         static public DbRepository DbRepository = new DbRepository();
+        static public DAL.IDbRepository dbRepository;
+
+
         //Get Id by Articles from xslx
         public static void GetIdByArticles(string articles)
         {
@@ -45,7 +47,6 @@ namespace ElectroStore.Models
                     itemContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                     foreach (var t in desData.result)
                     {
-
                         if (itemContext.GetIdByArticles.Find(t.id) == null)
                             itemContext.GetIdByArticles.Add(t);
                         else
@@ -62,54 +63,19 @@ namespace ElectroStore.Models
             }
             
         }
+
         //получаем цены по id товара
         public static void GetPrices()
         {           
-            RootS stockOfGoods = new RootS();            
+            RootS stockOfGoods = new RootS();
+            var jsonRemains = DbRepository.GetRemainsForPrices();
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
-                var response = client.PostAsync(Path_two, new StringContent(ConvertItemIdsToJSON(), Encoding.UTF8, "application/json")).Result;
+                var response = client.PostAsync(Path_two, new StringContent(jsonRemains, Encoding.UTF8, "application/json")).Result;
                 var result = response.Content.ReadAsStringAsync().Result;
-                stockOfGoods = JsonConvert.DeserializeObject<RootS>(result);
-            }
-
-            using (var itemContext = new ItemsContext())
-            {
-                itemContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking; 
-                foreach (var t in stockOfGoods.stockOfGoods)
-                {
-                    if (itemContext.StockOfGoods.Find(t.Id) == null)
-                        itemContext.StockOfGoods.Add(t);
-                    else
-                        itemContext.StockOfGoods.Update(t);
-                }
-                    
-                itemContext.SaveChanges();
-            }
-        }
-
-        public static string ConvertItemIdsToJSON()
-        {
-            RootPricesOffline rootG = new RootPricesOffline();
-            ExcelOperations _excelOperation = new ExcelOperations();
-            ArrayList arrayList = new ArrayList();
-            List<pricesOffline> getPricesBy = new List<pricesOffline>();
-            var list = DbRepository.GetRemainsForPrices();
-            //using (var itemContext = new ItemsContext())
-            //{
-            //foreach (var a in itemContext.GetIdByArticles)
-            foreach (var a in list)
-            {
-                    pricesOffline getPrices = new pricesOffline() { Id = a.id, Amount = 0};
-                    getPricesBy.Add(getPrices);
-            }
-                rootG.goods = getPricesBy;
-
-           // }
-
-            string ArticlesJsonFormat = JsonConvert.SerializeObject(rootG, Formatting.None);
-            return ArticlesJsonFormat;
+                DbRepository.InsertPrice(result);
+            }           
         }
 
         public static void RegisterItemsId()
@@ -143,22 +109,14 @@ namespace ElectroStore.Models
 
             }
 
-        }   
+        }
 
-        //получаем номенклатуру по айди
         public static void GetNomenclature()
         {
-            int j = 0;
-            string kratnostzakaza = "";
-            List<StockOfGoods> stockOfGoodsList = new List<StockOfGoods>();
-            Random random = new Random();
-            List<Remains> remainsList = new List<Remains>();
             RootNomenclature rootNomenclature = new RootNomenclature();
+
             GetPrice getPrice = new GetPrice();
-            int packCount = 0;
-            string seriaName = "";
-            string manufacture = "";
-            string images = "";
+            List<StockOfGoods> stockOfGoodsList = new List<StockOfGoods>();
 
             var list = DbRepository.GetRemainsForPrices();
 
@@ -166,84 +124,24 @@ namespace ElectroStore.Models
                 getPrice.ids.Add(a.id);
             using (var itemContext = new ItemsContext())
             {
-                //foreach (var a in itemContext.GetIdByArticles)
-                //    getPrice.ids.Add(a.id);
+                foreach (var a in itemContext.GetIdByArticles)
+                    getPrice.ids.Add(a.id);
                 foreach (var s in itemContext.StockOfGoods)
-                    stockOfGoodsList.Add(s);                
+                    stockOfGoodsList.Add(s);
             }
             string IdsJsonFormat = JsonConvert.SerializeObject(getPrice, Formatting.None);
+
+            JsonSerializerSettings config = new JsonSerializerSettings { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore };
 
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
                 var responce = client.PostAsync(Nomenclature, new StringContent(IdsJsonFormat, Encoding.UTF8, "application/json")).Result;
                 var result = responce.Content.ReadAsStringAsync().Result;
-                rootNomenclature = JsonConvert.DeserializeObject<RootNomenclature>(result);
+                var JsonResult = JsonConvert.SerializeObject(result, config);
+                DbRepository.InsertNomenclature(result);
             }
 
-            foreach (var s in rootNomenclature.nomenclatures)
-            {
-                j++;
-                Remains remains = new Remains();
-                
-                for (int i = 0; i < s.packs.Count; i++)
-                {
-                    packCount = s.packs[i].amountInPack;
-                    remains.Weight = s.packs[i].weight.ToString();
-                }
-                for (int i = 0; i < s.attributes.Count; i++)
-                {
-                    if (s.attributes.Count == 3)
-                    {
-                        kratnostzakaza = " Кратность заказа: " + s.attributes[0].value + " ";
-                        seriaName = s.attributes[1].name + ": " + s.attributes[1].valueId.value;
-                        manufacture = s.attributes[2].name + ": " + s.attributes[2].valueId.value;
-                        images = s.images600[0].link ??="";
-                    }
-                    else if (s.attributes.Count == 2)
-                    {
-                        kratnostzakaza = " Кратность заказа: " + s.attributes[0].value + " ";
-                        manufacture = s.attributes[1].name + ": " + s.attributes[1].valueId.value;
-                        if (s.images600.Count > 0)
-                            images = s.images600[0].link ??="";
-                    }                  
-                }
-
-                remains.Id = random.Next(333, 99999) + j;
-                remains.ItemName = s.name;
-                remains.ItemNameInURL = s.manufacturerCode + "_" + stockOfGoodsList.Find(m => m.Id == s.id).idCategoria;
-                remains.ShortDescription = s.name;
-                remains.FullDescription = s.categoryName + " Кол-во в упаковке: " + packCount + " шт." + " " + kratnostzakaza + seriaName + " " + manufacture;
-                remains.Visibility = "выставлен";
-                remains.Discount = "";
-                remains.TegTitle = "";
-                remains.MetaTegKeywords = "";
-                remains.MetaTegDescription = "";
-                //if (stockOfGoodsList.Find(m => m.Id == s.id).idCategoria == "6341")
-                remains.CategoryInSite = "Каталог/Выключатели/Legrand";
-                remains.WeightCoefficient = "";
-                remains.Currancy = "₽";
-                remains.NDS = "";
-                remains.Measure = "";
-                remains.Gabarit = "";
-                remains.ImageURL = images;
-                remains.VendorCode = stockOfGoodsList.Find(m => m.Id == s.id).articul;
-                remains.PriceRetail = stockOfGoodsList.Find(m => m.Id == s.id).PriceBasic;
-                remains.Remain = stockOfGoodsList.Find(m => m.Id == s.id).Stockamount;
-                remains.Weight = remains.Weight;
-                remains.Param1 = " Кол-во в упаковке: " + packCount + " шт." + " " + kratnostzakaza;
-                remains.Param2 = seriaName;
-                remains.Param3 = manufacture;
-                remainsList.Add(remains);
-            }
-
-            ExcelOperations.PreparePricesToLoad(remainsList);
-
-            foreach (var r in remainsList)
-                DbRepository.InsertRemain(r);
         }
-        
-
-
     }
 }

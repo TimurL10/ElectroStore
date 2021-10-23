@@ -16,7 +16,7 @@ namespace ElectroStore.DAL
 
         public DbRepository()
         {
-            _configuration = "Server = LAPTOP-94EIKF8P\\SQLEXPRESS; Integrated Security = SSPI; Database = ElectroStoreDb1;";
+            _configuration = "Server = LAPTOP-94EIKF8P\\SQLEXPRESS; Integrated Security = SSPI; Database = 7gostore_db;Connection Timeout=380;";
         }
 
         internal IDbConnection dbConnection
@@ -53,11 +53,46 @@ namespace ElectroStore.DAL
         //    }
         //}
 
-        public List<GetIdByArticles> GetRemainsForPrices()
+        public string GetRemainsForPrices()
         {
             using (IDbConnection connection = dbConnection)
             {
-                return connection.Query<GetIdByArticles>("select * from [ElectroStoreDb1].[dbo].[GetIdByArticles] where article not in (select vendorcode from[ElectroStoreDb1].[dbo].[Remains])").AsList();
+                return connection.Query<string>("select id,'0' as amount from GetIdByArticles for json path,root('goods')").ToString();
+            }
+        }
+
+        public void InsertNomenclature(string nomenclatureObj)
+        {
+            using (IDbConnection connection = dbConnection)
+            {
+                SqlCommand scCommand = new SqlCommand("InsertNomenclature", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                //scCommand.Parameters.Add("@Email", SqlDbType.Structured).Value = nomenclatures;
+                SqlParameter parameter = new SqlParameter();
+                scCommand.Parameters.AddWithValue("@nomenclatureObj", nomenclatureObj);
+                //parameter.ParameterName = "@value";
+                //parameter.DbType = DbType.Boolean;
+                //parameter.Direction = ParameterDirection.Output;
+                connection.Open();
+                scCommand.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+
+        public void InsertPrice(string Prices)
+        {
+            using (IDbConnection connection = dbConnection)
+            {
+                SqlCommand scCommand = new SqlCommand("InsertPrice", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameter = new SqlParameter();
+                scCommand.Parameters.AddWithValue("@price", Prices);
+                //parameter.ParameterName = "@value";
+                //parameter.DbType = DbType.Boolean;
+                //parameter.Direction = ParameterDirection.Output;
+                connection.Open();
+                scCommand.ExecuteNonQuery();
+                connection.Close();
             }
         }
     }
