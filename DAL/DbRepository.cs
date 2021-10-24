@@ -26,39 +26,34 @@ namespace ElectroStore.DAL
                 return new SqlConnection(_configuration);
             }
 
-        }
+        }        
 
-        public void InsertRemain(Remains remains)
+        public string GetIdsForNomenclatureReceive()
         {
+            string idsList = ""; 
             using (IDbConnection connection = dbConnection)
             {
-                connection.Execute(@"Insert Into Remains
-                                    ([ItemName],[ItemNameInURL],[URL],[ShortDescription],[FullDescription] ,[Visibility]
-                                    ,[Discount],[TegTitle],[MetaTegKeywords],[MetaTegDescription],[CategoryInSite]
-                                    ,[WeightCoefficient],[Currancy],[NDS],[Measure],[Gabarit],[ImageURL]
-                                    ,[VendorCode],[PriceRetail],[Remain],[Weight],[Param1],[Param2],[Param3])
-
-                                    VALUES(@ItemName, @ItemNameInUrl, @URL, @ShortDescription, @FullDescription, @Visibility,
-                                            @Discount, @TegTitle, @MetaTegKeywords,@MetaTegDescription, @CategoryInSite, 
-                                            @WeightCoefficient, @Currancy, @NDS, @Measure, @Gabarit,
-                                            @ImageURL, @VendorCode, @PriceRetail, @Remain, @Weight, @Param1, @Param2, @Param3)", remains);
+                IDataReader reader = null;
+                SqlCommand scCommand = new SqlCommand("GetIdsForNomenclatureReceive", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                //scCommand.Parameters.Add("@Email", SqlDbType.Structured).Value = nomenclatures;
+                SqlParameter parameter = new SqlParameter();
+                //Parameters.AddWithValue("@nomenclatureObj", nomenclatureObj);
+                parameter.ParameterName = "@idsList";
+                //parameter.DbType = DbType.Boolean;
+                parameter.Direction = ParameterDirection.Output;
+                connection.Open();
+                //scCommand.ExecuteNonQuery();
+                reader = scCommand.ExecuteReader();
+                
+                while (reader.Read())
+                {
+                    idsList = (string)reader[0];
+                }
+                connection.Close();
             }
-        }
+            return idsList;
 
-        //public void UpdateRemain(Remains remains)
-        //{
-        //    using (IDbConnection connection = dbConnection)
-        //    {
-        //        connection.Execute($"Update [Remains] set NNT = {mrcs.Nnt},Price = {mrcs.Price} where NNT = {mrcs.Nnt}", mrcs);
-        //    }
-        //}
-
-        public string GetRemainsForPrices()
-        {
-            using (IDbConnection connection = dbConnection)
-            {
-                return connection.Query<string>("select id,'0' as amount from GetIdByArticles for json path,root('goods')").ToString();
-            }
         }
 
         public void InsertNomenclature(string nomenclatureObj)
@@ -94,6 +89,42 @@ namespace ElectroStore.DAL
                 scCommand.ExecuteNonQuery();
                 connection.Close();
             }
+        }
+
+        public string GetRemainsForPrices()
+        {
+            string idsList = "";
+            using (IDbConnection connection = dbConnection)
+            {
+                IDataReader reader = null;
+                SqlCommand scCommand = new SqlCommand("GetRemainsForPrices", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                scCommand.Parameters.Add("@json", SqlDbType.NVarChar,50000).Direction = ParameterDirection.Output;
+                connection.Open();
+                scCommand.ExecuteNonQuery();
+                idsList = (string)scCommand.Parameters["@json"].Value;                
+                connection.Close();
+
+            }
+            return idsList;
+        }
+
+        public string CheckNewNomenclatureItems()
+        {
+            string idsList = "";
+            using (IDbConnection connection = dbConnection)
+            {
+                IDataReader reader = null;
+                SqlCommand scCommand = new SqlCommand("CheckNewNomenclatureItems", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                scCommand.Parameters.Add("@idsList", SqlDbType.NVarChar, 50000).Direction = ParameterDirection.Output;
+                connection.Open();
+                scCommand.ExecuteNonQuery();
+                idsList = (string)scCommand.Parameters["@idsList"].Value;
+                connection.Close();
+
+            }
+            return idsList;
         }
     }
 }

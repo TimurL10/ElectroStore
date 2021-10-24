@@ -114,34 +114,14 @@ namespace ElectroStore.Models
         public static void GetNomenclature()
         {
             RootNomenclature rootNomenclature = new RootNomenclature();
-
-            GetPrice getPrice = new GetPrice();
-            List<StockOfGoods> stockOfGoodsList = new List<StockOfGoods>();
-
-            var list = DbRepository.GetRemainsForPrices();
-
-            foreach (var a in list)
-                getPrice.ids.Add(a.id);
-            using (var itemContext = new ItemsContext())
-            {
-                foreach (var a in itemContext.GetIdByArticles)
-                    getPrice.ids.Add(a.id);
-                foreach (var s in itemContext.StockOfGoods)
-                    stockOfGoodsList.Add(s);
-            }
-            string IdsJsonFormat = JsonConvert.SerializeObject(getPrice, Formatting.None);
-
-            JsonSerializerSettings config = new JsonSerializerSettings { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore };
-
+            var JsonidsList = DbRepository.CheckNewNomenclatureItems();
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
-                var responce = client.PostAsync(Nomenclature, new StringContent(IdsJsonFormat, Encoding.UTF8, "application/json")).Result;
+                var responce = client.PostAsync(Nomenclature, new StringContent(JsonidsList, Encoding.UTF8, "application/json")).Result;
                 var result = responce.Content.ReadAsStringAsync().Result;
-                var JsonResult = JsonConvert.SerializeObject(result, config);
                 DbRepository.InsertNomenclature(result);
             }
-
         }
     }
 }
