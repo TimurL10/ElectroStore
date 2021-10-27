@@ -113,12 +113,13 @@ namespace ElectroStore.Models
 
         public static void GetNomenclature()
         {
-            RootNomenclature rootNomenclature = new RootNomenclature();
             var JsonidsList = DbRepository.CheckNewNomenclatureItems();
+            var obj = new { ids = JsonidsList };
+            var json = JsonConvert.SerializeObject(obj);
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
-                var responce = client.PostAsync(Nomenclature, new StringContent(JsonidsList, Encoding.UTF8, "application/json")).Result;
+                var responce = client.PostAsync(Nomenclature, new StringContent(json, Encoding.UTF8, "application/json")).Result;
                 var result = responce.Content.ReadAsStringAsync().Result;
                 DbRepository.InsertNomenclature(result);
             }

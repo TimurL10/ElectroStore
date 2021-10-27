@@ -109,22 +109,59 @@ namespace ElectroStore.DAL
             return idsList;
         }
 
-        public string CheckNewNomenclatureItems()
+        //public string CheckNewNomenclatureItems()
+        //{
+        //    string idsList = "";
+        //    using (IDbConnection connection = dbConnection)
+        //    {
+        //        IDataReader reader = null;
+        //        SqlCommand scCommand = new SqlCommand("CheckNewNomenclatureItems", (SqlConnection)connection);
+        //        scCommand.CommandType = CommandType.StoredProcedure;
+        //        scCommand.Parameters.Add("@idsList", SqlDbType.NVarChar, 50000).Direction = ParameterDirection.Output;
+        //        connection.Open();
+        //        scCommand.ExecuteNonQuery();
+        //        idsList = (string)scCommand.Parameters["@idsList"].Value;
+        //        connection.Close();
+
+        //    }
+        //    return idsList;
+        //}
+
+        //public string CheckNewNomenclatureItems()
+        //{
+        //    string idsList = "";
+        //    using (IDbConnection connection = dbConnection)
+        //    {
+        //        IDataReader reader = null;
+        //        SqlCommand scCommand = new SqlCommand("CheckNewNomenclatureItems", (SqlConnection)connection);
+        //        scCommand.CommandType = CommandType.StoredProcedure;
+        //        //scCommand.Parameters.Add("@Email", SqlDbType.Structured).Value = nomenclatures;
+        //        SqlParameter parameter = new SqlParameter();
+        //        //Parameters.AddWithValue("@nomenclatureObj", nomenclatureObj);
+        //        parameter.ParameterName = "@idsList";
+        //        //parameter.DbType = DbType.Boolean;
+        //        parameter.Direction = ParameterDirection.Output;
+        //        connection.Open();
+        //        //scCommand.ExecuteNonQuery();
+        //        reader = scCommand.ExecuteReader();
+
+        //        while (reader.Read())
+        //        {
+        //            idsList = (string)reader[0];
+        //        }
+        //        connection.Close();
+        //    }
+        //    return idsList;
+
+        //}
+
+        public List<string> CheckNewNomenclatureItems()
         {
-            string idsList = "";
             using (IDbConnection connection = dbConnection)
             {
-                IDataReader reader = null;
-                SqlCommand scCommand = new SqlCommand("CheckNewNomenclatureItems", (SqlConnection)connection);
-                scCommand.CommandType = CommandType.StoredProcedure;
-                scCommand.Parameters.Add("@idsList", SqlDbType.NVarChar, 50000).Direction = ParameterDirection.Output;
-                connection.Open();
-                scCommand.ExecuteNonQuery();
-                idsList = (string)scCommand.Parameters["@idsList"].Value;
-                connection.Close();
-
+                dbConnection.Open();
+                return dbConnection.Query<string>("select id from stockofgoods where id not in(select id from nomenclature)").AsList<string>();
             }
-            return idsList;
         }
     }
 }
