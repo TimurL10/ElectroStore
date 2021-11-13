@@ -54,7 +54,7 @@ namespace ElectroStore.Models
             public string typeOfSearch;
         }
 
-        public void PreparePricesToLoad(List<Remains> remains)
+        public void BuildExcelFileWithPrices(List<Remains> remains)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 

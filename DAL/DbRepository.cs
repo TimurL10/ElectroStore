@@ -163,5 +163,14 @@ namespace ElectroStore.DAL
                 return dbConnection.Query<string>("select id from stockofgoods where id not in(select id from nomenclature)").AsList<string>();
             }
         }
+
+        public List<Remains> GetRemainsForExel()
+        {
+            using (IDbConnection connection = dbConnection)
+            {
+                dbConnection.Open();
+                return dbConnection.Query<Remains>("select * from v_getremainsforexel").AsList<Remains>();
+            }
+        }
     }
 }

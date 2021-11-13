@@ -124,5 +124,13 @@ namespace ElectroStore.Models
                 DbRepository.InsertNomenclature(result);
             }
         }
+
+        public static void GetRemainsForExel()
+        {
+            var remains = DbRepository.GetRemainsForExel();
+            ExcelOperations excelOperations = new ExcelOperations();
+            excelOperations.BuildExcelFileWithPrices(remains);
+
+        }
     }
 }

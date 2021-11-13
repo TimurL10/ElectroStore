@@ -8,7 +8,7 @@ namespace ElectroStore.Services
     interface IExcelOperation
     {
         public List<string> ReadArticlesFromExcel();
-        public void PreparePricesToLoad(List<Remains> remains);
+        public void BuildExcelFileWithPrices(List<Remains> remains);
 
     }
 }
