@@ -17,11 +17,11 @@ namespace ElectroStore
         
         static void Main(string[] args)
         {
-           // ApiConnector.GetIdByArticles(GetArticles());
-            //ApiConnector.GetPrices();
+            //ApiConnector.GetIdByArticles(GetArticles());
+            ApiConnector.GetPrices();
             //ApiConnector.RegisterItemsId();
            // ApiConnector.GetNomenclature();
-            ApiConnector.GetRemainsForExel();
+            //ApiConnector.GetRemainsForExel();
         }
 
         static public string GetArticles()

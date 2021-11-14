@@ -76,6 +76,7 @@ namespace ElectroStore.DAL
 
         public void InsertPrice(string Prices)
         {
+            //Prices = Prices.Replace("'", string.Empty);
             using (IDbConnection connection = dbConnection)
             {
                 SqlCommand scCommand = new SqlCommand("InsertPrice", (SqlConnection)connection);
@@ -85,6 +86,7 @@ namespace ElectroStore.DAL
                 //parameter.ParameterName = "@value";
                 //parameter.DbType = DbType.Boolean;
                 //parameter.Direction = ParameterDirection.Output;
+                scCommand.CommandTimeout = 300;
                 connection.Open();
                 scCommand.ExecuteNonQuery();
                 connection.Close();
