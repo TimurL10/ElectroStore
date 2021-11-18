@@ -68,6 +68,7 @@ namespace ElectroStore.DAL
                 //parameter.ParameterName = "@value";
                 //parameter.DbType = DbType.Boolean;
                 //parameter.Direction = ParameterDirection.Output;
+                scCommand.CommandTimeout = 500;
                 connection.Open();
                 scCommand.ExecuteNonQuery();
                 connection.Close();
