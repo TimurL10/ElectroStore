@@ -28,7 +28,6 @@ namespace ElectroStore
         {
             Root root;
             ExcelOperations _excelOperation = new ExcelOperations();
-            ArrayList arrayList = new ArrayList();
             root.articles = _excelOperation.ReadArticlesFromExcel();
             root.typeOfSearch = "Артикул";
             string ArticlesJsonFormat = JsonConvert.SerializeObject(root, Formatting.None);

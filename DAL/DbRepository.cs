@@ -87,7 +87,7 @@ namespace ElectroStore.DAL
                 //parameter.ParameterName = "@value";
                 //parameter.DbType = DbType.Boolean;
                 //parameter.Direction = ParameterDirection.Output;
-                scCommand.CommandTimeout = 300;
+                scCommand.CommandTimeout = 1300;
                 connection.Open();
                 scCommand.ExecuteNonQuery();
                 connection.Close();
@@ -99,7 +99,7 @@ namespace ElectroStore.DAL
             string idsList = "";
             using (IDbConnection connection = dbConnection)
             {
-                IDataReader reader = null;
+                //IDataReader reader = null;
                 SqlCommand scCommand = new SqlCommand("GetRemainsForPrices", (SqlConnection)connection);
                 scCommand.CommandType = CommandType.StoredProcedure;
                 scCommand.Parameters.Add("@json", SqlDbType.NVarChar,50000).Direction = ParameterDirection.Output;
@@ -163,17 +163,33 @@ namespace ElectroStore.DAL
             using (IDbConnection connection = dbConnection)
             {
                 dbConnection.Open();
-                return dbConnection.Query<string>("select id from stockofgoods where id not in(select id from nomenclature)").AsList<string>();
+                return dbConnection.Query<string>("select id from stockofgoods where id in(select id from nomenclature)", commandTimeout: 60).AsList<string>();
             }
-        }
+        }       
+
 
         public List<Remains> GetRemainsForExel()
         {
             using (IDbConnection connection = dbConnection)
             {
-                dbConnection.Open();
                 return dbConnection.Query<Remains>("select * from v_getremainsforexel").AsList<Remains>();
             }
+            //string idsList = "";
+            //using (IDbConnection connection = dbConnection)
+            //{
+
+            //    SqlCommand scCommand = new SqlCommand("select * from v_getremainsforexel", (SqlConnection)connection);
+            //    scCommand.CommandType = CommandType.TableDirect;
+            //    scCommand.CommandTimeout = 300;
+
+
+
+
+            //    dbConnection.Open();
+            //    idsList = scCommand.ExecuteNonQuery().
+
+            //    connection.Close();
+
         }
     }
 }

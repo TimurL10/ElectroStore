@@ -94,9 +94,10 @@ namespace ElectroStore.Models
                 worksheet.Cells["AD1"].Value = "Параметр: Метка";
                 worksheet.Cells["AE1"].Value = "Параметр: Характеристика 1";
                 worksheet.Cells["AF1"].Value = "Параметр: Характеристика 3";
-                worksheet.Cells["AG1"].Value = "Параметр: Категория Яндекс Маркета";
-                worksheet.Cells["AH1"].Value = "Параметр: Категория товара в Google";
-                worksheet.Cells["AI1"].Value = "Параметр: Категория товара в OZON";
+                worksheet.Cells["AG1"].Value = "Параметр: Характеристика 4";
+                worksheet.Cells["AH1"].Value = "Параметр: Категория Яндекс Маркета";
+                worksheet.Cells["AI1"].Value = "Параметр: Категория товара в Google";
+                worksheet.Cells["AJ1"].Value = "Параметр: Категория товара в OZON";
 
                 //worksheet.Cells["A1"].LoadFromCollection(remains);
 
@@ -136,10 +137,11 @@ namespace ElectroStore.Models
                         worksheet.Cells[k, 29].Value = "";
                         worksheet.Cells[k, 30].Value = remains[i].Param1;
                         worksheet.Cells[k, 31].Value = remains[i].Param2; 
-                        worksheet.Cells[k, 32].Value = remains[i].Param3; 
-                        worksheet.Cells[k, 33].Value = "";
+                        worksheet.Cells[k, 32].Value = remains[i].Param3;
+                        worksheet.Cells[k, 33].Value = remains[i].Param4;
                         worksheet.Cells[k, 34].Value = "";
                         worksheet.Cells[k, 35].Value = "";
+                        worksheet.Cells[k, 36].Value = "";
                     }
                 }
 
