@@ -163,7 +163,7 @@ namespace ElectroStore.DAL
             using (IDbConnection connection = dbConnection)
             {
                 dbConnection.Open();
-                return dbConnection.Query<string>("select id from stockofgoods where id in(select id from nomenclature)", commandTimeout: 60).AsList<string>();
+                return dbConnection.Query<string>("select id from stockofgoods where id in(select id from nomenclature)", commandTimeout: 120).AsList<string>();
             }
         }       
 
@@ -172,7 +172,7 @@ namespace ElectroStore.DAL
         {
             using (IDbConnection connection = dbConnection)
             {
-                return dbConnection.Query<Remains>("select * from v_getremainsforexel").AsList<Remains>();
+                return dbConnection.Query<Remains>("select * from v_getremainsforexel", commandTimeout: 240).AsList<Remains>();
             }
             //string idsList = "";
             //using (IDbConnection connection = dbConnection)
