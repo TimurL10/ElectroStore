@@ -28,7 +28,8 @@ namespace ElectroStore.Models
         static public DAL.IDbRepository dbRepository;
 
 
-        //Get Id by Articles from xslx
+
+        //Получает из Элевел Айди по артикулям взятым из эксель.
         public static void GetIdByArticles(string articles)
         {
             try
@@ -40,21 +41,12 @@ namespace ElectroStore.Models
                     var response = client.PostAsync(Path_one, new StringContent(articles, Encoding.UTF8, "application/json")).Result;
                     var result = response.Content.ReadAsStringAsync().Result;
                     // Десериализация полученного JSON-объекта
-                    desData = JsonConvert.DeserializeObject<Root>(result);
+                    //desData = JsonConvert.DeserializeObject<Root>(result);
+
+                    DbRepository.Dal_UpdateWithNewElevelids(result);
                 }
-                using (var itemContext = new ItemsContext())
-                {
-                    itemContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                    foreach (var t in desData.result)
-                    {
-                        if (itemContext.GetIdByArticles.Find(t.id) == null)
-                            itemContext.GetIdByArticles.Add(t);
-                        else
-                            itemContext.GetIdByArticles.Update(t);
-                    }
-                        
-                    itemContext.SaveChanges();
-                }
+                
+
 
             }
             catch (Exception ex)

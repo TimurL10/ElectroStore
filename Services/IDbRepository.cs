@@ -9,6 +9,6 @@ namespace ElectroStore.Services
     {
         public void InsertRemain(Remains remains);
         public List<GetIdByArticles> GetRemainsForPrices();
-
+        public void Dal_UpdateWithNewElevelids(string elevel_ids);
     }
 }

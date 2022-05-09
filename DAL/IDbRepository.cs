@@ -9,5 +9,7 @@ namespace ElectroStore.DAL
     {
         public void InsertNomenclature(string nomenclatureObj);
         public void InsertPrice(string price);
+        public void Dal_UpdateWithNewElevelids(string elevel_ids);
+
     }
 }

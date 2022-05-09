@@ -163,9 +163,29 @@ namespace ElectroStore.DAL
             using (IDbConnection connection = dbConnection)
             {
                 dbConnection.Open();
-                return dbConnection.Query<string>("select id from stockofgoods where id in(select id from nomenclature)", commandTimeout: 120).AsList<string>();
+                return dbConnection.Query<string>("select id from GetIdByArticles where id not in (select id from nomenclature)", commandTimeout: 120).AsList<string>();
             }
-        }       
+        }
+
+
+        public void Dal_UpdateWithNewElevelids(string @elevel_ids)
+        {
+            elevel_ids = elevel_ids.Replace("'", string.Empty);
+            using (IDbConnection connection = dbConnection)
+            {
+                SqlCommand scCommand = new SqlCommand("InsertPrice", (SqlConnection)connection);
+                scCommand.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameter = new SqlParameter();
+                scCommand.Parameters.AddWithValue("@elevel_ids", elevel_ids);
+                //parameter.ParameterName = "@value";
+                //parameter.DbType = DbType.Boolean;
+                //parameter.Direction = ParameterDirection.Output;
+                scCommand.CommandTimeout = 1300;
+                connection.Open();
+                scCommand.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
 
 
         public List<Remains> GetRemainsForExel()
@@ -191,5 +211,8 @@ namespace ElectroStore.DAL
             //    connection.Close();
 
         }
+
+
+
     }
 }
