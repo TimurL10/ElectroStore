@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ElectroStore.Models
 {
-    public class ApiConnector
+    public class ApiConnector : IApiConnector
     {
         static string Path_one = "http://swop.krokus.ru/ExchangeBase/hs/catalog/getidbyarticles";
         static string Path_two = "http://swop.krokus.ru/ExchangeBase/hs/catalog/stockOfGoods?format=:string";
@@ -25,12 +25,12 @@ namespace ElectroStore.Models
         static public IConfiguration config;
         public static ExcelOperations ExcelOperations = new ExcelOperations();
         static public DbRepository DbRepository = new DbRepository();
-        static public DAL.IDbRepository dbRepository;
+        static public IDbRepository dbRepository;
 
 
 
         //Получает из Элевел Айди по артикулям взятым из эксель.
-        public static void GetIdByArticles(string articles)
+        public  void GetIdByArticles(string articles)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace ElectroStore.Models
         }
 
         //получаем цены по id товара
-        public static void GetPrices()
+        public  void GetPrices()
         {           
             RootS stockOfGoods = new RootS();
             var jsonRemains = DbRepository.GetRemainsForPrices();
@@ -70,7 +70,7 @@ namespace ElectroStore.Models
             }           
         }
 
-        public static void RegisterItemsId()
+        public  void RegisterItemsId()
         {
             RootR rootR = new RootR();
             RootPrice rootPrice = new RootPrice();
@@ -103,7 +103,7 @@ namespace ElectroStore.Models
 
         }
 
-        public static void GetNomenclature()
+        public  void GetNomenclature()
         {
             var JsonidsList = DbRepository.CheckNewNomenclatureItems();
             var obj = new { ids = JsonidsList };
@@ -117,7 +117,7 @@ namespace ElectroStore.Models
             }
         }
 
-        public static void GetRemainsForExel()
+        public  void GetRemainsForExel()
         {
             var remains = DbRepository.GetRemainsForExel();
             ExcelOperations excelOperations = new ExcelOperations();

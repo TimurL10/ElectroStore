@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ElectroStore.Models;
+using ElectroStore.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -9,10 +10,10 @@ using System.Text;
 
 namespace ElectroStore.DAL
 {
-    public class DbRepository
+    public class DbRepository : IDbRepository
     {
         private string _configuration;
-        private IConfiguration configuration;
+        //private IConfiguration configuration;
 
         public DbRepository()
         {
@@ -90,7 +91,7 @@ namespace ElectroStore.DAL
                 scCommand.CommandTimeout = 1300;
                 connection.Open();
                 scCommand.ExecuteNonQuery();
-                connection.Close();
+                connection.Close(); 
             }
         }
 
@@ -167,13 +168,22 @@ namespace ElectroStore.DAL
             }
         }
 
+        public List<string> GetArticles()
+        {
+            using (IDbConnection connection = dbConnection)
+            {
+                dbConnection.Open();
+                return dbConnection.Query<string>("SELECT  [Артикул] FROM [7gostore_db].[dbo].[TDSheet$] where [тариф] > 20000", commandTimeout: 120).AsList<string>();
+            }
+        }
+
 
         public void Dal_UpdateWithNewElevelids(string @elevel_ids)
         {
             elevel_ids = elevel_ids.Replace("'", string.Empty);
             using (IDbConnection connection = dbConnection)
             {
-                SqlCommand scCommand = new SqlCommand("InsertPrice", (SqlConnection)connection);
+                SqlCommand scCommand = new SqlCommand("GetIdByArticle", (SqlConnection)connection);
                 scCommand.CommandType = CommandType.StoredProcedure;
                 SqlParameter parameter = new SqlParameter();
                 scCommand.Parameters.AddWithValue("@elevel_ids", elevel_ids);
