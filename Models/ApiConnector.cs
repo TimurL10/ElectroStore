@@ -67,7 +67,7 @@ namespace ElectroStore.Models
         {
             try
             {
-                _logWriter.LogWrite("Method GetPrices is Running" + " " + DateTime.Now.ToString());
+                _logWriter.LogWrite("Method GetPrices is Running");
                 RootS stockOfGoods = new RootS();
                 var jsonRemains = DbRepository.GetRemainsForPrices();
                 using (var client = new HttpClient())
@@ -81,7 +81,7 @@ namespace ElectroStore.Models
             
             catch (Exception ex)
             {
-                _logWriter.LogWrite("Method GetPrices is catching" + ex.Message.ToString() + " " + DateTime.Now.ToString());
+                _logWriter.LogWrite("Method GetPrices is catching" + " " + ex.Message.ToString());
             }
         }
 
@@ -120,16 +120,25 @@ namespace ElectroStore.Models
 
         public  void GetNomenclature()
         {
-            var JsonidsList = DbRepository.CheckNewNomenclatureItems();
-            var obj = new { ids = JsonidsList };
-            var json = JsonConvert.SerializeObject(obj);
-            using (var client = new HttpClient())
+            try
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
-                var responce = client.PostAsync(Nomenclature, new StringContent(json, Encoding.UTF8, "application/json")).Result;
-                var result = responce.Content.ReadAsStringAsync().Result;
-                DbRepository.InsertNomenclature(result);
+                _logWriter.LogWrite("Method GetNomenclature is Running");
+                var JsonidsList = DbRepository.CheckNewNomenclatureItems();
+                var obj = new { ids = JsonidsList };
+                var json = JsonConvert.SerializeObject(obj);
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
+                    var responce = client.PostAsync(Nomenclature, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+                    var result = responce.Content.ReadAsStringAsync().Result;
+                    DbRepository.InsertNomenclature(result);
+                }
             }
+            catch(Exception ex)
+            {
+                _logWriter.LogWrite("Method GetNomenclature is catching" + " " + ex.Message.ToString() );
+            }
+
         }
 
         public  void GetRemainsForExel()

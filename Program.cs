@@ -55,9 +55,9 @@ namespace ElectroStore
             {
 
                 // _apiConnector.GetIdByArticles(GetArticles());
-                 _apiConnector.GetPrices();
+                // _apiConnector.GetPrices();
                 //  _apiConnector.RegisterItemsId();
-               // _apiConnector.GetNomenclature();
+                _apiConnector.GetNomenclature();
                 // _apiConnector.GetRemainsForExel();
             }
 
