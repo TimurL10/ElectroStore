@@ -34,6 +34,7 @@ namespace ElectroStore
         {
             services.AddSingleton<IApiConnector, ApiConnector>();
             services.AddSingleton<IDbRepository, DbRepository>();
+            services.AddSingleton<ILogWriter, LogWriter>();
 
             //services.AddSingleton<IDbContext, DbContext>();
         }
@@ -52,12 +53,12 @@ namespace ElectroStore
 
             public void Execute()
             {
-                _apiConnector.GetIdByArticles(GetArticles()); 
-                
-                // ApiConnector.GetPrices();
-                //  ApiConnector.RegisterItemsId();
-                // ApiConnector.GetNomenclature();
-                // ApiConnector.GetRemainsForExel();
+
+                // _apiConnector.GetIdByArticles(GetArticles());
+                 _apiConnector.GetPrices();
+                //  _apiConnector.RegisterItemsId();
+               // _apiConnector.GetNomenclature();
+                // _apiConnector.GetRemainsForExel();
             }
 
             static public string GetArticles()

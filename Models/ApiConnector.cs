@@ -25,9 +25,15 @@ namespace ElectroStore.Models
         static public IConfiguration config;
         public static ExcelOperations ExcelOperations = new ExcelOperations();
         static public DbRepository DbRepository = new DbRepository();
-        static public IDbRepository dbRepository;
+        static public IDbRepository _dbRepository;
+        static public ILogWriter _logWriter;
 
 
+        public ApiConnector(IDbRepository  dbRepository, ILogWriter logWriter)
+        {
+            _dbRepository = dbRepository;
+            _logWriter = logWriter;
+        }
 
         //Получает из Элевел Айди по артикулям взятым из эксель.
         public  void GetIdByArticles(string articles)
@@ -58,16 +64,25 @@ namespace ElectroStore.Models
 
         //получаем цены по id товара
         public  void GetPrices()
-        {           
-            RootS stockOfGoods = new RootS();
-            var jsonRemains = DbRepository.GetRemainsForPrices();
-            using (var client = new HttpClient())
+        {
+            try
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
-                var response = client.PostAsync(Path_two, new StringContent(jsonRemains, Encoding.UTF8, "application/json")).Result;
-                var result = response.Content.ReadAsStringAsync().Result;
-                DbRepository.InsertPrice(result);
-            }           
+                _logWriter.LogWrite("Method GetPrices is Running" + " " + DateTime.Now.ToString());
+                RootS stockOfGoods = new RootS();
+                var jsonRemains = DbRepository.GetRemainsForPrices();
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", "Basic 0JPQmtCQ0KHQotCe0KDQmNCv0JvQmNCh0KLQkNCg0J7QntCeNzcyNjQzOTY5NzpGdTZfdHU1anlj");
+                    var response = client.PostAsync(Path_two, new StringContent(jsonRemains, Encoding.UTF8, "application/json")).Result;
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    DbRepository.InsertPrice(result);
+                }
+            }
+            
+            catch (Exception ex)
+            {
+                _logWriter.LogWrite("Method GetPrices is catching" + ex.Message.ToString() + " " + DateTime.Now.ToString());
+            }
         }
 
         public  void RegisterItemsId()
